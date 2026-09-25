@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
 import AdminLayout from './components/layout/AdminLayout';
 import HomePage from './pages/HomePage';
@@ -14,7 +14,6 @@ import NotFoundPage from './pages/NotFoundPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminFeaturesPage from './pages/admin/AdminFeaturesPage';
 import AdminCommentsPage from './pages/admin/AdminCommentsPage';
-import FeatureForm from './components/features/FeatureForm';
 import { Spinner } from './components/ui/Spinner';
 import { useAuth } from './context/AuthContext';
 
@@ -23,16 +22,6 @@ const AuthLoading = () => (
     <Spinner size="lg" />
   </div>
 );
-
-const RequireAuth = ({ children }: { children: JSX.Element }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-  const location = useLocation();
-
-  if (isLoading) return <AuthLoading />;
-  if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />;
-
-  return children;
-};
 
 const RequireAdmin = ({ children }: { children: JSX.Element }) => {
   const { user, isLoading } = useAuth();
@@ -47,11 +36,10 @@ export default function App() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route path="/" element={<RequireAuth><HomePage /></RequireAuth>} />
-        <Route path="/features" element={<RequireAuth><FeaturesPage /></RequireAuth>} />
-        <Route path="/features/new" element={<RequireAuth><FeatureForm /></RequireAuth>} />
-        <Route path="/features/:id" element={<RequireAuth><FeatureDetailPage /></RequireAuth>} />
-        <Route path="/roadmap" element={<RequireAuth><RoadmapPage /></RequireAuth>} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/features/:id" element={<FeatureDetailPage />} />
+        <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />

@@ -24,11 +24,20 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function FeatureForm() {
+interface FeatureFormProps {
+  /** When true, renders just the form (no Card/heading) for use inside a Modal. */
+  embedded?: boolean;
+  /** Called after a successful create. Receives the new feature id. */
+  onSuccess?: (id: string) => void;
+  /** Called when the user cancels. */
+  onCancel?: () => void;
+}
+
+export default function FeatureForm({ embedded, onSuccess, onCancel }: FeatureFormProps) {
   const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
   const navigate = useNavigate();
   const createMutation = useCreateFeature();
-  
+
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { category: 'GENERAL' }
@@ -41,7 +50,8 @@ export default function FeatureForm() {
     createMutation.mutate(data, {
       onSuccess: (res) => {
         toast.success('Feature created successfully');
-        navigate(`/features/${res.data._id}`);
+        if (onSuccess) onSuccess(res.data._id);
+        else navigate(`/features/${res.data._id}`);
       },
       onError: (err: any) => {
         toast.error(err.message || 'Failed to create feature');
@@ -49,9 +59,12 @@ export default function FeatureForm() {
     });
   };
 
-  return (
-    <Card className="p-6 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Request a Feature</h2>
+  const handleCancel = () => {
+    if (onCancel) onCancel();
+    else navigate(-1);
+  };
+
+  const formEl = (
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
           <Input
@@ -121,10 +134,18 @@ export default function FeatureForm() {
         </div>
 
         <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
           <Button type="submit" isLoading={createMutation.isPending}>Submit Request</Button>
         </div>
       </form>
+  );
+
+  if (embedded) return formEl;
+
+  return (
+    <Card className="p-6 max-w-3xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6">Request a Feature</h2>
+      {formEl}
     </Card>
   );
 }

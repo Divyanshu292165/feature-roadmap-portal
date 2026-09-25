@@ -1,8 +1,7 @@
-import { Link } from 'react-router-dom';
-import { Button } from '../components/ui/Button';
 import { SearchBar } from '../components/features/SearchBar';
 import { FilterBar } from '../components/features/FilterBar';
 import { FeatureList } from '../components/features/FeatureList';
+import { SubmitFeatureButton } from '../components/features/SubmitFeatureButton';
 import { useFeatureList } from '../hooks/useFeatures';
 import { useSearchParams } from 'react-router-dom';
 
@@ -27,9 +26,11 @@ export default function HomePage() {
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">Shape our product roadmap</h1>
           <p className="text-blue-100 text-lg">Submit, discuss, and vote for the features you want to see built next.</p>
         </div>
-        <Link to="/features/new">
-          <Button size="lg" variant="secondary" className="bg-amber-400 hover:bg-amber-300 border-amber-400 text-neutral-900 font-semibold shadow-sm">Submit a Feature</Button>
-        </Link>
+        <SubmitFeatureButton
+          size="lg"
+          variant="secondary"
+          className="bg-amber-400 hover:bg-amber-300 border-amber-400 text-neutral-900 font-semibold shadow-sm"
+        />
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">

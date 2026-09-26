@@ -2,6 +2,15 @@
 
 A production-quality, full-stack customer feedback platform built with React, Node.js, MongoDB, and TypeScript. Users can submit feature requests, vote, comment, and view a public Kanban roadmap. Admins can moderate, change statuses, and manage the roadmap.
 
+## 🌐 Live Demo
+
+- **App:** https://feature-roadmap-portal.vercel.app
+- **API health:** https://feature-roadmap-portal.onrender.com/api/health
+
+> Hosted on Vercel (frontend) + Render (backend) + MongoDB Atlas. The backend runs on
+> Render's free tier, so the first request after a period of inactivity may take
+> ~30–60s to wake up. See [DEPLOYMENT.md](DEPLOYMENT.md) for the full setup.
+
 ---
 
 ## 🚀 Features

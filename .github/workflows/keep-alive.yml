@@ -1,0 +1,17 @@
+name: Keep-alive ping
+
+# Pings the Render health endpoint so the free-tier backend (and Atlas)
+# don't sleep after ~15 minutes of inactivity.
+on:
+  schedule:
+    - cron: '*/10 * * * *' # every 10 minutes
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /api/health
+        run: |
+          curl -sSf --max-time 90 https://feature-roadmap-portal.onrender.com/api/health
+          echo " — ping OK"

@@ -3,6 +3,7 @@ import { AuthService } from '../services/auth.service';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../services/email.service';
 import { env } from '../config/env';
 import { successResponse, errorResponse } from '../utils/apiResponse';
+import { refreshCookieOptions, clearRefreshCookieOptions, REFRESH_COOKIE_NAME } from '../utils/cookieOptions';
 import { registerSchema, loginSchema, verifyEmailSchema, forgotPasswordSchema, resetPasswordSchema } from '../validators/auth.validators';
 
 export const register = async (req: Request, res: Response) => {
@@ -20,15 +21,9 @@ export const login = async (req: Request, res: Response) => {
   
   try {
     const { user, accessToken, refreshToken } = await AuthService.loginUser(email, password);
-    
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/'
-    });
-    
+
+    res.cookie(REFRESH_COOKIE_NAME, refreshToken, refreshCookieOptions);
+
     res.json(successResponse({ user, accessToken }));
   } catch (err: any) {
     if (err.statusCode) {
@@ -47,18 +42,12 @@ export const refresh = async (req: Request, res: Response) => {
   
   try {
     const { accessToken, refreshToken } = await AuthService.refreshTokens(oldRefreshToken);
-    
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/'
-    });
-    
+
+    res.cookie(REFRESH_COOKIE_NAME, refreshToken, refreshCookieOptions);
+
     res.json(successResponse({ accessToken }));
   } catch (err: any) {
-    res.clearCookie('refreshToken', { path: '/' });
+    res.clearCookie(REFRESH_COOKIE_NAME, clearRefreshCookieOptions);
     if (err.statusCode) {
       res.status(err.statusCode).json(errorResponse(err.message, 'AUTH_ERROR', err.statusCode));
     } else {
@@ -72,7 +61,7 @@ export const logout = async (req: Request, res: Response) => {
   if (refreshToken) {
     await AuthService.logoutUser(refreshToken);
   }
-  res.clearCookie('refreshToken', { path: '/' });
+  res.clearCookie(REFRESH_COOKIE_NAME, clearRefreshCookieOptions);
   res.json(successResponse(null, 'Logged out successfully'));
 };
 

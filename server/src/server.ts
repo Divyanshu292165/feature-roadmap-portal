@@ -15,6 +15,12 @@ import healthRoutes from './routes/health.routes';
 
 const app = express();
 
+// Behind a hosting proxy (Render/Railway/etc.) so Express treats the
+// forwarded connection as HTTPS — required for Secure cookies to be set.
+if (env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(helmet());
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use(express.json());
